@@ -7,19 +7,20 @@
 
 class LifecycleManager {
 	max_concurrent = 2;
-	repeat = 0;
 	repeatTime = 0;
 	repeatedTimes = 0;
+	repeatTimes;
 	beforeInvokingFunc;
 	handleErrorFunc;;
 	afterInvokingFunc;
 
-	constructor({ repeat = false, repeatTime = 60000, beforeInvokingFunc = null, afterInvokingFunc= null, 
+	constructor({ repeatTimes = 0, repeatTime = 1000, beforeInvokingFunc = null, afterInvokingFunc= null, 
 		handleErrorFunc= null, max_concurrent = 2, workerPool = false  }) {
 		if (typeof repeat == 'number' && +repeat > 0)
 			this.repeat = repeat;
 		if (!isNaN(repeatTime) && +repeatTime > 0)
 			this.repeatTime = repeatTime;
+		this.repeatTimes = repeatTimes
 		this.beforeInvokingFunc =beforeInvokingFunc;
 		this.afterInvokingFunc = afterInvokingFunc;
 		this.handleErrorFunc = handleErrorFunc;
@@ -68,10 +69,12 @@ class LifecycleManager {
 		} catch (error) {
 			if(this.handleErrorFunc){
 				this.handleErrorFunc(error);
+			} else {
+				console.error(`Task Error with id: ${uuid}`);
 			}
-			if(this.repeat && this.repeat > this.repeatedTimes) {
-				this.repeatedTimes -= 1;
-				setTimeout(async () => this.invoke(cb, args), this.repeatTime)
+			if(this.repeatTimes && this.repeatedTimes < this.repeatTimes) {
+				this.repeatedTimes += 1;
+				setTimeout(async () => await this.invoke(cb, args), this.repeatTime)
 			}
 		}
 	}
