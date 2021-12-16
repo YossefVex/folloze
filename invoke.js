@@ -61,7 +61,7 @@
 	 prepareInvokeArrForExecution(invokingObject) {
 		 let invokeArrRefactordForExecution;
 		 if (invokingObject.invokeArr.length === 1 && this.this.workerPool) {
-			 invokeArrRefactordForExecution = [this.workerPool(invokingObject.invokeArr.invoke, invokingObject.invokeArr.params)];
+			 invokeArrRefactordForExecution = [this.workerPool(invokingObject.invokeArr[0].invoke, invokingObject.invokeArr[0].params)];
 		 } else {
 			 invokeArrRefactordForExecution = invokingObject.invokeArr.map((invokeObj) => {
 				 const { invoke } = invokeObj;
