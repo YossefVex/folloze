@@ -24,14 +24,12 @@
 	 constructor({
 		 beforeInvokingObject = new InvokeObjectCreator(),
 		 afterInvokingObject = new InvokeObjectCreator(),
-		 mainInvokingFuncObject = new InvokeObjectCreator(),
 		 handleErrorObject = null,
 		 workerPool = null,
 		 max_concurrent = 2
 	 }) {
 		 this.#beforeInvokingObject = beforeInvokingObject;
 		 this.#afterInvokingObject = afterInvokingObject;
-		 this.#mainInvokingFuncObject = mainInvokingFuncObject;
 		 this.#handleErrorObject = handleErrorObject;
 		 this.max_concurrent = max_concurrent;
 		 if (workerPool) {
@@ -113,7 +111,7 @@
 		 if (!this.checkFunctionsArrayValidy(this.beforeInvokingObject)) {
 			 console.error(`${functionName} is not a Function Array!`);
 		 }
-		 if (!Array.isArray(invokingObject.repeats)) {
+		 if (!Array.isArray(invokingObject.repeats) && !Array.isArray(invokingObject.invoke)) {
 			 return invokingObject.invoke();
 		 }
 		 let retrySuccessFlag = false;
@@ -168,6 +166,7 @@
  
 	 invoke = async (cb, args) => {
 		 const uuid = randomUUID();
+		 this.#mainInvokingFuncObject = [new Promise((resolve, reject) =>{resolve(cb(args))})];
 		 /** i made this 3 function explicit invoked and not only with defferent params for future mutation / addons for each one of them; */
 		 const beforeInvokeResult = this.beforeInvoke(uuid);
 		 const mainInvokeResult = this.mainInvoke(uuid);
