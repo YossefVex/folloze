@@ -6,10 +6,10 @@
  const { randomUUID } = await import('crypto');
  /**
   *
-  * @param {*} invokeFunctionsArray = [invoke: function, params: json]
+  * @param {*} invokeFunctionsArray = {invoke: function, params: json}
   * @param {*} repeats
   */
- function InvokeObjectCreator(invokeFunctionsArray = [], repeats = []) {
+ function InvokeObjectCreator(invokeFunctionsArray = [], repeats = [], args = null) {
 	 this.invokeArr = invokeFunctionsArray;
 	 this.repeats = repeats;
  }
@@ -145,9 +145,9 @@
 		 await this.invokeFunctionWithRepeats(params);
 	 };
  
-	 mainInvoke = async (uuid) => {
+	 mainInvoke = async (uuid, mainInvokingFuncObject) => {
 		 const params = {
-			 invokingObject: this.#mainInvokingFuncObject,
+			 invokingObject: mainInvokingFuncObject,
 			 functionName: 'main-Invoking-Function',
 			 uuid
 		 };
@@ -166,10 +166,10 @@
  
 	 invoke = async (cb, args) => {
 		 const uuid = randomUUID();
-		 this.#mainInvokingFuncObject = [new Promise((resolve, reject) =>{resolve(cb(args))})];
+		 const mainInvokingFuncObject = {invoke: cb, params: args};
 		 /** i made this 3 function explicit invoked and not only with defferent params for future mutation / addons for each one of them; */
 		 const beforeInvokeResult = this.beforeInvoke(uuid);
-		 const mainInvokeResult = this.mainInvoke(uuid);
+		 const mainInvokeResult = this.mainInvoke(uuid, mainInvokingFuncObject);
 		 const afterInvokeResult = this.afterInvoke(uuid);
 		 return {
 			 beforeInvokeResult,
